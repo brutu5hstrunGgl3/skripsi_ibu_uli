@@ -2,6 +2,7 @@
 
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\PayrollController;
 
 
 
@@ -17,5 +18,10 @@ Route::middleware(['auth'])->group(function () {
  Route::resource('user', UserController::class);
 
     
+});
+Route::middleware(['auth', 'role:admin|manager'])->group(function () {
+
+    Route::resource('payroll', PayrollController::class);
+
 });
 
