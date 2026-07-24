@@ -99,6 +99,10 @@
 
                                     <th>Jenis Gaji</th>
 
+                                    <th>Nama Bank</th>
+
+                                    <th>No Rekening</th>
+
                                     <th>Gaji Pokok</th>
 
                                     <th>Lembur</th>
@@ -199,6 +203,16 @@
                                         {{ $payroll->jenis_gaji }}
 
                                     </td>
+
+                                     <td>
+
+                                        {{ $payroll->nama_bank }}
+
+                                    </td>
+
+                                    <td>
+
+                                        {{ $payroll->no_rek }}
 
                                     <td>
 

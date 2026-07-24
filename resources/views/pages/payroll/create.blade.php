@@ -265,59 +265,71 @@
 
                         <div class="row">
 
-                            <div class="col-md-4">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>Potongan</label>
+            <input type="number"
+                   name="potongan"
+                   class="form-control"
+                   value="{{ old('potongan',0) }}"
+                   min="0">
+        </div>
+    </div>
 
-                                <div class="form-group">
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>No Rekening</label>
+            <input type="text"
+                   name="no_rek"
+                   class="form-control"
+                   value="{{ old('no_rek') }}"
+                   maxlength="30">
+        </div>
+    </div>
 
-                                    <label>Potongan</label>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>Nama Bank</label>
+            <input type="text"
+                   name="nama_bank"
+                   class="form-control"
+                   value="{{ old('nama_bank') }}"
+                   maxlength="30">
+        </div>
+    </div>
 
-                                    <input
-                                        type="number"
-                                        name="potongan"
-                                        class="form-control"
-                                        value="{{ old('potongan',0) }}"
-                                        min="0">
+</div>
 
-                                </div>
+<div class="row">
 
-                            </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>Status Payroll</label>
 
-                            <div class="col-md-4">
+            <select name="status" class="form-control">
 
-                                <div class="form-group">
+                <option value="Diproses">Diproses</option>
 
-                                    <label>No Rekening</label>
+                <option value="Dibayar">Dibayar</option>
 
-                                    <input
-                                        type="text"
-                                        name="no_rek"
-                                        class="form-control"
-                                        value="{{ old('no_rek') }}"
-                                        maxlength="30">
+            </select>
 
-                                </div>
+        </div>
+    </div>
 
-                            </div>
+    <div class="col-md-4">
+        <div class="form-group">
+            <label>Tanggal Pembayaran</label>
 
-                            <div class="col-md-4">
+            <input type="date"
+                   name="tanggal_pembayaran"
+                   class="form-control"
+                   value="{{ old('tanggal_pembayaran') }}">
+        </div>
+    </div>
 
-                                <div class="form-group">
-
-                                    <label>Tanggal Pembayaran</label>
-
-                                    <input
-                                        type="date"
-                                        name="tanggal_pembayaran"
-                                        class="form-control"
-                                        value="{{ old('tanggal_pembayaran') }}"
-                                        required>
-
-                                </div>
-
-                            </div>
-
-                        </div>
-
+</div>
+                         
                         <div class="row">
 
                             <div class="col-md-6">

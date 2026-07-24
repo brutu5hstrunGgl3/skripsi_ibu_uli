@@ -61,6 +61,7 @@ class PayrollController extends Controller
             'gaji_pokok'     => 'required|numeric|min:0',
             'lembur'         => 'nullable|numeric|min:0',
             'no_rek'         => 'nullable|max:30',
+            'nama_bank'      => 'nullable|max:100',
             'jenis_gaji'     => 'required|in:Transfer Bank,Payroll Bank,Tunai,E-Wallet',
             'hadir'          => 'required|integer|min:0',
             'izin'           => 'nullable|integer|min:0',
@@ -68,29 +69,31 @@ class PayrollController extends Controller
             'alpha'          => 'nullable|integer|min:0',
             'bonus'          => 'nullable|numeric|min:0',
             'potongan'       => 'nullable|numeric|min:0',
+            'status'         => 'required|in:Diproses,Dibayar',
             'periode_awal'   => 'required|date',
             'periode_akhir'  => 'required|date|after_or_equal:periode_awal',
+            
 
         ]);
 
         DB::transaction(function () use ($validated) {
 
+                $uangLembur = $this->hitungLemburHariKerja(
+                $validated['gaji_pokok'],
+                $validated['lembur'] ?? 0
+            );
+
             $jumlahGaji =
-
                 $validated['gaji_pokok']
-
-                + ($validated['lembur'] ?? 0)
-
+                + $uangLembur
                 + ($validated['bonus'] ?? 0)
-
                 - ($validated['potongan'] ?? 0);
-
-            Payroll::create([
-
+           Payroll::create([
                 'user_id'       => $validated['user_id'],
                 'gaji_pokok'    => $validated['gaji_pokok'],
-                'lembur'        => $validated['lembur'] ?? 0,
+                'lembur'        => $uangLembur,
                 'no_rek'        => $validated['no_rek'],
+                'nama_bank'     => $validated['nama_bank'],
                 'jenis_gaji'    => $validated['jenis_gaji'],
                 'hadir'         => $validated['hadir'],
                 'izin'          => $validated['izin'] ?? 0,
@@ -99,10 +102,10 @@ class PayrollController extends Controller
                 'bonus'         => $validated['bonus'] ?? 0,
                 'potongan'      => $validated['potongan'] ?? 0,
                 'jumlah_gaji'   => $jumlahGaji,
+                'status'       => $validated['status'],
                 'periode_awal'  => $validated['periode_awal'],
                 'periode_akhir' => $validated['periode_akhir'],
-                'status'        => 'Draft',
-
+               
             ]);
 
         });
@@ -142,6 +145,7 @@ class PayrollController extends Controller
             'gaji_pokok'     => 'required|numeric|min:0',
             'lembur'         => 'nullable|numeric|min:0',
             'no_rek'         => 'nullable|max:30',
+            'nama_bank'      => 'nullable|max:100',
             'jenis_gaji'     => 'required|in:Transfer Bank,Payroll Bank,Tunai,E-Wallet',
             'hadir'          => 'required|integer|min:0',
             'izin'           => 'nullable|integer|min:0',
@@ -151,19 +155,20 @@ class PayrollController extends Controller
             'potongan'       => 'nullable|numeric|min:0',
             'periode_awal'   => 'required|date',
             'periode_akhir'  => 'required|date|after_or_equal:periode_awal',
-
+            'status'         => 'required|in:Diproses,Dibayar',
         ]);
 
         DB::transaction(function () use ($validated, $payroll) {
 
+                $uangLembur = $this->hitungLemburHariKerja(
+                $validated['gaji_pokok'],
+                $validated['lembur'] ?? 0
+            );
+
             $jumlahGaji =
-
                 $validated['gaji_pokok']
-
-                + ($validated['lembur'] ?? 0)
-
+                + $uangLembur
                 + ($validated['bonus'] ?? 0)
-
                 - ($validated['potongan'] ?? 0);
 
             $payroll->update([
@@ -172,6 +177,7 @@ class PayrollController extends Controller
                 'gaji_pokok'    => $validated['gaji_pokok'],
                 'lembur'        => $validated['lembur'] ?? 0,
                 'no_rek'        => $validated['no_rek'],
+                'nama_bank'     => $validated['nama_bank'],
                 'jenis_gaji'    => $validated['jenis_gaji'],
                 'hadir'         => $validated['hadir'],
                 'izin'          => $validated['izin'] ?? 0,
@@ -180,6 +186,7 @@ class PayrollController extends Controller
                 'bonus'         => $validated['bonus'] ?? 0,
                 'potongan'      => $validated['potongan'] ?? 0,
                 'jumlah_gaji'   => $jumlahGaji,
+                'status'        => $validated['status'],
                 'periode_awal'  => $validated['periode_awal'],
                 'periode_akhir' => $validated['periode_akhir'],
 
@@ -191,6 +198,27 @@ class PayrollController extends Controller
             ->route('payroll.index')
             ->with('success', 'Data payroll berhasil diperbarui.');
     }
+
+    private function hitungLemburHariKerja($gajiBulanan, $jamLembur)
+{
+    if ($jamLembur <= 0) {
+        return 0;
+    }
+
+    $upahPerJam = $gajiBulanan / 173;
+
+    $total = 0;
+
+    for ($i = 1; $i <= $jamLembur; $i++) {
+        if ($i == 1) {
+            $total += 1.5 * $upahPerJam;
+        } else {
+            $total += 2 * $upahPerJam;
+        }
+    }
+
+    return round($total);
+}
 
     /**
      * Remove the specified resource.
@@ -204,4 +232,6 @@ class PayrollController extends Controller
             ->route('payroll.index')
             ->with('success', 'Data payroll berhasil dihapus.');
     }
+
+   
 }

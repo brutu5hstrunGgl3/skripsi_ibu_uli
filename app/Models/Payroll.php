@@ -15,6 +15,7 @@ class Payroll extends Model
         'gaji_pokok',
         'lembur',
         'no_rek',
+        'nama_bank',
         'jenis_gaji',
         'hadir',
         'izin',

@@ -7,9 +7,53 @@
             <a href="index.html">St</a>
         </div>
         <ul class="sidebar-menu">
-            <li class="menu-header">Dashboard</li>
-           
 
+
+      
+            <li class="menu-header">Management Users</li>
+           
+   <li class="nav-item dropdown ">
+                    <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Users</span></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="nav-link" href="{{ route('user.index') }}">User List</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                    <li class="menu-header">Absensi</li>
+           
+   <li class="nav-item dropdown ">
+                    <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Absensi kehadiran</span></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="nav-link" href="">List Kehadiran</a>
+                        </li>
+
+                         <li>
+                            <a class="nav-link" href="{{ route('absensi.masuk') }}">Absensi datang</a>
+                        </li>
+
+                         <li>
+                            <a class="nav-link" href="{{ route('absensi.pulang') }}">Absensi Pulang</a>
+                        </li>
+
+                    </ul>
+                </li>
+
+                <li class="menu-header">Management Penggajian</li>
+           
+   <li class="nav-item dropdown ">
+                    <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Gaji</span></a>
+                    <ul class="dropdown-menu">
+                        <li>
+                            <a class="nav-link" href="{{ route('payroll.index') }}">Payroll</a>
+                        </li>
+
+                    </ul>
+                </li>
+                
         <div class="hide-sidebar-mini mt-4 mb-4 p-3">
             <a href="https://getstisla.com/docs"
                 class="btn btn-primary btn-lg btn-block btn-icon-split">
