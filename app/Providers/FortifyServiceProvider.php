@@ -49,6 +49,11 @@ class FortifyServiceProvider extends ServiceProvider
             return view('auth.auth-login');
         }); 
 
+        //register 
+        Fortify::registerView(function () {
+            return view('auth.auth-register');
+        });
+
         //logout response
         $this->app->instance(LogoutResponse::class, new class implements LogoutResponse {
             public function toResponse($request)

@@ -1,10 +1,10 @@
 <div class="main-sidebar sidebar-style-2">
     <aside id="sidebar-wrapper">
         <div class="sidebar-brand">
-            <a href="index.html">Stisla</a>
+            <a href="index.html">Internusa</a>
         </div>
         <div class="sidebar-brand sidebar-brand-sm">
-            <a href="index.html">St</a>
+            <a href="index.html">I</a>
         </div>
         <ul class="sidebar-menu">
 
@@ -41,7 +41,8 @@
 
                     </ul>
                 </li>
-
+    
+                @hasanyrole('Admin|Owner')
                 <li class="menu-header">Management Penggajian</li>
            
    <li class="nav-item dropdown ">
@@ -53,7 +54,7 @@
 
                     </ul>
                 </li>
-                
+              @endhasanyrole  
         <div class="hide-sidebar-mini mt-4 mb-4 p-3">
             <a href="https://getstisla.com/docs"
                 class="btn btn-primary btn-lg btn-block btn-icon-split">

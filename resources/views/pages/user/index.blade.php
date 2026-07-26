@@ -108,7 +108,7 @@
 
                             <tbody>
 
-                            @forelse ($users as $user)
+                            @foreach ($users as $user)
 
                                 <tr>
 
@@ -215,7 +215,7 @@
 
                                 </tr>
 
-                            @empty
+                           
 
                                 <tr>
 
@@ -227,8 +227,7 @@
 
                                 </tr>
 
-                            @endforelse
-
+                             @endforeach
                             </tbody>
 
                         </table>

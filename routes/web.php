@@ -20,7 +20,7 @@ Route::middleware(['auth'])->group(function () {
 
     
 });
-Route::middleware(['auth', 'role:admin|manager'])->group(function () {
+Route::middleware(['auth', 'role:Admin|Owner'])->group(function () {
 
     Route::resource('payroll', PayrollController::class);
 

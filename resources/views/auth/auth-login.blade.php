@@ -16,9 +16,10 @@
 
         <div class="card-body">
             <form method="POST"
-                action="#"
+                action=" {{ route('login') }}"
                 class="needs-validation"
                 novalidate="">
+                  @csrf
                 <div class="form-group">
                     <label for="email">Email</label>
                     <input id="email"
@@ -73,6 +74,13 @@
                         tabindex="4">
                         Login
                     </button>
+                </div>
+                 <div class="form-group">
+                    <a href="{{ route('register') }}"
+                        class="btn btn-primary btn-lg btn-block"
+                        tabindex="4">
+                        Register
+                    </a>
                 </div>
             </form>
            
