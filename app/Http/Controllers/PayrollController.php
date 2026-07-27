@@ -83,11 +83,16 @@ class PayrollController extends Controller
                 $validated['lembur'] ?? 0
             );
 
-            $jumlahGaji =
-                $validated['gaji_pokok']
-                + $uangLembur
-                + ($validated['bonus'] ?? 0)
-                - ($validated['potongan'] ?? 0);
+                $totalKehadiran = $this->hitungTotalKehadiran(
+                    $validated['gaji_pokok'],
+                    $validated['hadir']
+                );
+
+                $jumlahGaji =
+                    $validated['gaji_pokok']
+                    + $totalKehadiran
+                    + ($validated['bonus'] ?? 0)
+                    - ($validated['potongan'] ?? 0);
            Payroll::create([
                 'user_id'       => $validated['user_id'],
                 'gaji_pokok'    => $validated['gaji_pokok'],
@@ -165,11 +170,16 @@ class PayrollController extends Controller
                 $validated['lembur'] ?? 0
             );
 
-            $jumlahGaji =
-                $validated['gaji_pokok']
-                + $uangLembur
-                + ($validated['bonus'] ?? 0)
-                - ($validated['potongan'] ?? 0);
+                $totalKehadiran = $this->hitungTotalKehadiran(
+                    $validated['gaji_pokok'],
+                    $validated['hadir']
+                );
+
+                $jumlahGaji =
+                    $validated['gaji_pokok']
+                    + $totalKehadiran
+                    + ($validated['bonus'] ?? 0)
+                    - ($validated['potongan'] ?? 0);
 
             $payroll->update([
 
@@ -219,6 +229,18 @@ class PayrollController extends Controller
 
     return round($total);
 }
+
+    private function hitungTotalKehadiran($gajiBulanan, $hadir)
+    {
+        if ($hadir <= 0) {
+            return 0;
+        }
+
+        // Asumsi: 22 hari kerja dalam sebulan untuk menghitung upah per hari
+        $upahPerHari = $gajiBulanan / 22;
+
+        return round($upahPerHari * $hadir);
+    }
 
     /**
      * Remove the specified resource.

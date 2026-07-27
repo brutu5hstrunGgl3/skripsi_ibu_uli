@@ -4,6 +4,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\PayrollController;
 use App\Http\Controllers\AbsensiController;
+use App\Http\Controllers\IjinController;
 
 
 
@@ -17,6 +18,9 @@ Route::middleware(['auth'])->group(function () {
     })->name('home');
 
  Route::resource('user', UserController::class);
+    
+    // Ijin (izin) resource routes for users
+    Route::resource('ijin', IjinController::class);
 
     
 });

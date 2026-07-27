@@ -15,7 +15,16 @@ class AbsensiController extends Controller
      */
  public function index()
 {
-    $absensis = Absensi::with('user')->latest()->get();
+    $user = auth()->user();
+
+    if (method_exists($user, 'hasAnyRole') && $user->hasAnyRole('Admin', 'Owner')) {
+        $absensis = Absensi::with('user')->latest()->paginate(10);
+    } else {
+        $absensis = Absensi::with('user')
+            ->where('user_id', $user->id)
+            ->latest()
+            ->paginate(10);
+    }
 
     return view('pages.absensi.index', compact('absensis'));
 }
@@ -79,7 +88,7 @@ class AbsensiController extends Controller
 
 public function formMasuk()
 {
-    return view('pages.absensi.index');
+    return view('pages.absensi.masuk');
 }
 public function pulang()
 {

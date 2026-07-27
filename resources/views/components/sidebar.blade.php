@@ -26,20 +26,28 @@
            
    <li class="nav-item dropdown ">
                     <a href="#" class="nav-link has-dropdown"><i class="fas fa-fire"></i><span>Absensi kehadiran</span></a>
-                    <ul class="dropdown-menu">
-                        <li>
-                            <a class="nav-link" href="">List Kehadiran</a>
-                        </li>
+                        <ul class="dropdown-menu">
+                            <li>
+                                <a class="nav-link" href="{{ route('absensi.index') }}">Riwayat Kehadiran</a>
+                            </li>
 
-                         <li>
-                            <a class="nav-link" href="{{ route('absensi.masuk') }}">Absensi datang</a>
-                        </li>
+                             <li>
+                                <a class="nav-link" href="{{ route('absensi.formMasuk') }}">Absensi Datang</a>
+                            </li>
 
-                         <li>
-                            <a class="nav-link" href="{{ route('absensi.pulang') }}">Absensi Pulang</a>
-                        </li>
+                             <li>
+                                <a class="nav-link" href="{{ route('absensi.formPulang') }}">Absensi Pulang</a>
+                            </li>
 
-                    </ul>
+                             <li>
+                                <a class="nav-link" href="{{ route('ijin.index') }}">Riwayat Ijin</a>
+                            </li>
+
+                             <li>
+                                <a class="nav-link" href="{{ route('ijin.create') }}">Ajukan Ijin</a>
+                            </li>
+
+                        </ul>
                 </li>
     
                 @hasanyrole('Admin|Owner')

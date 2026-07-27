@@ -156,25 +156,9 @@
 
                                         @forelse($payroll->user->roles as $role)
 
-                                            @php
+                                          
 
-                                                $badge = match($role->name){
-
-                                                    'admin' => 'badge-danger',
-
-                                                    'manager' => 'badge-primary',
-
-                                                    'kasir' => 'badge-warning',
-
-                                                    'karyawan' => 'badge-success',
-
-                                                    default => 'badge-secondary'
-
-                                                };
-
-                                            @endphp
-
-                                            <span class="badge {{ $badge }}">
+                                            <span class="">
 
                                                 {{ ucfirst($role->name) }}
 
@@ -182,7 +166,7 @@
 
                                         @empty
 
-                                            <span class="badge badge-secondary">
+                                            <span class="">
 
                                                 Belum Ada Role
 
