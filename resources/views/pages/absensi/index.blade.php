@@ -21,8 +21,9 @@
                 <div class="card-header">
                     <h4>Daftar Kehadiran</h4>
                     <div class="card-header-action">
-                        <a href="{{ route('absensi.formMasuk') }}" class="btn btn-primary">Absen Masuk</a>
-                        <a href="{{ route('absensi.formPulang') }}" class="btn btn-secondary">Absen Pulang</a>
+                         @hasanyrole('Admin|Owner')
+                        <a href="{{ route('absensi.export') }}" class="btn btn-success">Export Excel</a>
+                               @endhasanyrole  
                     </div>
                 </div>
 

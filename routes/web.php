@@ -39,9 +39,16 @@ Route::post('/absensi/masuk',[AbsensiController::class,'masuk'])
 Route::get('/absensi', [AbsensiController::class, 'index'])
     ->name('absensi.index');
 
+Route::get('/absensi/export', [AbsensiController::class, 'export'])
+    ->name('absensi.export');
+
 Route::get('/absensi/pulang', [AbsensiController::class, 'formPulang'])
     ->name('absensi.formPulang');
 
 Route::post('/absensi/pulang', [AbsensiController::class, 'pulang'])
     ->name('absensi.pulang');
+
+    Route::get('/absensi/export', [AbsensiController::class, 'exportExcel'])
+    ->name('absensi.export')
+    ->middleware('auth');
 

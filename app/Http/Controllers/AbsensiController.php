@@ -5,17 +5,26 @@ namespace App\Http\Controllers;
 use App\Models\Absensi;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
+use App\Exports\AbsensiExporter;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx; 
+
+
 
 class AbsensiController extends Controller
 {
+
+
+
     /**
      * Display a listing of the resource.
      */
  public function index()
 {
     $user = auth()->user();
+
+    if (! $user) {
+        return redirect()->route('login');
+    }
 
     if (method_exists($user, 'hasAnyRole') && $user->hasAnyRole('Admin', 'Owner')) {
         $absensis = Absensi::with('user')->latest()->paginate(10);
@@ -28,6 +37,8 @@ class AbsensiController extends Controller
 
     return view('pages.absensi.index', compact('absensis'));
 }
+
+   
  
     public function masuk(Request $request)
 {
@@ -37,6 +48,10 @@ class AbsensiController extends Controller
   
 
     $user = auth()->user();
+
+    if (! $user) {
+        return redirect()->route('login');
+    }
 
     $cek = Absensi::where('user_id', $user->id)
         ->whereDate('tgl_masuk', today())
@@ -94,6 +109,10 @@ public function pulang()
 {
     $user = auth()->user();
 
+    if (! $user) {
+        return redirect()->route('login');
+    }
+
     $absensi = Absensi::where('user_id', $user->id)
         ->whereDate('tgl_masuk', today())
         ->first();
@@ -134,5 +153,25 @@ public function formPulang( )
     }
 
     return view('pages.absensi.pulang', compact('absensi'));
+}
+
+public function exportExcel()
+{
+    $user = auth()->user();
+
+    if (! $user) {
+        return redirect()->route('login');
+    }
+
+    $spreadsheet = AbsensiExporter::export($user);
+    $writer = new Xlsx($spreadsheet);
+
+    $fileName = 'absensi_' . now()->format('Ymd_His') . '.xlsx';
+
+    return response()->streamDownload(function () use ($writer) {
+        $writer->save('php://output');
+    }, $fileName, [
+        'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    ]);
 }
 }

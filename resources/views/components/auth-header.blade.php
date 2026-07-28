@@ -1,6 +1,6 @@
  <div class="login-brand">
-     <img src="{{ asset('img/stisla-fill.svg') }}"
+     <img src="{{ asset('img/logo_RM_KAPAU.PNG') }}"
          alt="logo"
-         width="100"
-         class="shadow-light rounded-circle">
+         width="200"
+         class="shadow-light rounded-cube">
  </div>
