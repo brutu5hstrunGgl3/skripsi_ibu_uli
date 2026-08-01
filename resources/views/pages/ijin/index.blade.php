@@ -34,7 +34,8 @@
                                     <th>Nama</th>
                                     <th>Tanggal Ijin</th>
                                     <th>Keterangan</th>
-                                    <th>Aksi</th>
+                                     @hasanyrole('Admin|Owner')
+                                    <th>Aksi</th>@endhasanyrole
                                 </tr>
                             </thead>
                             <tbody>
@@ -45,6 +46,7 @@
                                         <td>{{ $ijin->tanggal_ijin ?? $ijin->created_at->format('Y-m-d') }}</td>
                                         <td>{{ $ijin->keterangan_ijin }}</td>
                                         <td>
+                                             @hasanyrole('Admin|Owner')
                                             <a href="{{ route('ijin.edit', $ijin) }}" class="btn btn-sm btn-warning">Edit</a>
 
                                             <form action="{{ route('ijin.destroy', $ijin) }}" method="POST" style="display:inline-block" onsubmit="return confirm('Hapus ijin ini?');">
@@ -52,9 +54,11 @@
                                                 @method('DELETE')
                                                 <button class="btn btn-sm btn-danger">Hapus</button>
                                             </form>
+                                             @endhasanyrole
                                         </td>
                                     </tr>
                                 @empty
+                                
                                     <tr>
                                         <td colspan="5" class="text-center">Belum ada ijin.</td>
                                     </tr>

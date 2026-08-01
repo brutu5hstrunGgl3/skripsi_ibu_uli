@@ -12,12 +12,17 @@
             <h1>Data Payroll</h1>
 
             <div class="section-header-button">
-
+            @hasanyrole('Admin|Owner')
                 <a href="{{ route('payroll.create') }}" class="btn btn-primary">
                     <i class="fas fa-plus"></i>
                     Tambah Payroll
                 </a>
 
+                <a href="{{ route('payroll.export') }}" class="btn btn-success">
+                    <i class="fas fa-file-excel"></i>
+                    Export Excel
+                </a>
+     @endhasanyrole
             </div>
 
             <div class="section-header-breadcrumb">
@@ -260,20 +265,25 @@
 
                                         <div class="d-flex justify-content-center">
 
-                                            <a href="{{ route('payroll.show',$payroll->id) }}"
-                                                class="btn btn-info btn-sm mr-1">
-
-                                                <i class="fas fa-eye"></i>
-
-                                            </a>
-
+                                         
+                                            @hasanyrole('Admin|Owner')
                                             <a href="{{ route('payroll.edit',$payroll->id) }}"
                                                 class="btn btn-warning btn-sm mr-1">
 
                                                 <i class="fas fa-edit"></i>
 
                                             </a>
+                                            @endhasanyrole
+                                            <a href="{{ route('payroll.slip',$payroll->id) }}"
+                                                class="btn btn-success btn-sm mr-1"
+                                                target="_blank"
+                                                rel="noopener noreferrer"
+                                                title="Unduh / Cetak Slip Gaji">
 
+                                                <i class="fas fa-download"></i>
+
+                                            </a>
+                                           @hasanyrole('Admin|Owner')
                                             <form
                                                 action="{{ route('payroll.destroy',$payroll->id) }}"
                                                 method="POST">
@@ -287,7 +297,7 @@
                                                     <i class="fas fa-trash"></i>
 
                                                 </button>
-
+                                           @endhasanyrole
                                             </form>
 
                                         </div>

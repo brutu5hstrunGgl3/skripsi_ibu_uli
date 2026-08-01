@@ -159,7 +159,7 @@
 
                                 <div class="form-group">
 
-                                    <label>Lembur</label>
+                                    <label>Nominal Lembur</label>
 
                                     <input
                                         type="number"

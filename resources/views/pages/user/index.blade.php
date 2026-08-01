@@ -130,15 +130,15 @@
 
                                                 $badge = match($role->name){
 
-                                                    'admin' => 'badge-danger',
+                                                    'admin' => '',
 
-                                                    'manager' => 'badge-primary',
+                                                    'manager' => '',
 
-                                                    'kasir' => 'badge-warning',
+                                                    'kasir' => '',
 
-                                                    'karyawan' => 'badge-success',
+                                                    'karyawan' => '',
 
-                                                    default => 'badge-secondary'
+                                                    default => ''
 
                                                 };
 

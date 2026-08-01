@@ -2,11 +2,14 @@
 
 namespace App\Http\Controllers;
 
+use App\Exports\PayrollExporter;
 use App\Models\Payroll;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class PayrollController extends Controller
 {
@@ -20,9 +23,16 @@ class PayrollController extends Controller
      */
     public function index(Request $request)
     {
+        $user = Auth::user();
         $keyword = $request->keyword;
 
-        $payrolls = Payroll::with('user')
+        $query = Payroll::with('user');
+
+        if (!$this->isAdminOrOwner($user)) {
+            $query->where('user_id', $user->id);
+        }
+
+        $payrolls = $query
             ->when($keyword, function ($query) use ($keyword) {
 
                 $query->whereHas('user', function ($q) use ($keyword) {
@@ -44,6 +54,12 @@ class PayrollController extends Controller
      */
     public function create()
     {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user)) {
+            abort(403);
+        }
+
         $users = User::orderBy('name')->get();
 
         return view('pages.payroll.create', compact('users'));
@@ -54,6 +70,11 @@ class PayrollController extends Controller
      */
     public function store(Request $request)
     {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user)) {
+            abort(403);
+        }
 
         $validated = $request->validate([
 
@@ -78,21 +99,16 @@ class PayrollController extends Controller
 
         DB::transaction(function () use ($validated) {
 
-                $uangLembur = $this->hitungLemburHariKerja(
+            $uangLembur = $this->hitungLemburHariKerja(
                 $validated['gaji_pokok'],
                 $validated['lembur'] ?? 0
             );
 
-                $totalKehadiran = $this->hitungTotalKehadiran(
-                    $validated['gaji_pokok'],
-                    $validated['hadir']
-                );
+            $jumlahGaji = $this->hitungJumlahGaji(
+                $validated['gaji_pokok'],
+                $uangLembur
+            );
 
-                $jumlahGaji =
-                    $validated['gaji_pokok']
-                    + $totalKehadiran
-                    + ($validated['bonus'] ?? 0)
-                    - ($validated['potongan'] ?? 0);
            Payroll::create([
                 'user_id'       => $validated['user_id'],
                 'gaji_pokok'    => $validated['gaji_pokok'],
@@ -125,6 +141,12 @@ class PayrollController extends Controller
      */
     public function show(Payroll $payroll)
     {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user) && $payroll->user_id !== $user->id) {
+            abort(403);
+        }
+
         return view('pages.payroll.show', compact('payroll'));
     }
 
@@ -133,9 +155,48 @@ class PayrollController extends Controller
      */
     public function edit(Payroll $payroll)
     {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user) && $payroll->user_id !== $user->id) {
+            abort(403);
+        }
+
         $users = User::orderBy('name')->get();
 
         return view('pages.payroll.edit', compact('payroll', 'users'));
+    }
+
+    public function downloadSlip(Payroll $payroll)
+    {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user) && $payroll->user_id !== $user->id) {
+            abort(403);
+        }
+
+        $payroll->load('user');
+
+        return view('pages.payroll.pdf.slip', compact('payroll'));
+    }
+
+    public function exportExcel()
+    {
+        $user = Auth::user();
+
+        if (!$user) {
+            return redirect()->route('login');
+        }
+
+        $spreadsheet = PayrollExporter::export($user);
+        $writer = new Xlsx($spreadsheet);
+
+        $fileName = 'payroll_' . now()->format('Ymd_His') . '.xlsx';
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $fileName, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
     }
 
     /**
@@ -143,6 +204,11 @@ class PayrollController extends Controller
      */
     public function update(Request $request, Payroll $payroll)
     {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user)) {
+            abort(403);
+        }
 
         $validated = $request->validate([
 
@@ -165,21 +231,15 @@ class PayrollController extends Controller
 
         DB::transaction(function () use ($validated, $payroll) {
 
-                $uangLembur = $this->hitungLemburHariKerja(
+            $uangLembur = $this->hitungLemburHariKerja(
                 $validated['gaji_pokok'],
                 $validated['lembur'] ?? 0
             );
 
-                $totalKehadiran = $this->hitungTotalKehadiran(
-                    $validated['gaji_pokok'],
-                    $validated['hadir']
-                );
-
-                $jumlahGaji =
-                    $validated['gaji_pokok']
-                    + $totalKehadiran
-                    + ($validated['bonus'] ?? 0)
-                    - ($validated['potongan'] ?? 0);
+            $jumlahGaji = $this->hitungJumlahGaji(
+                $validated['gaji_pokok'],
+                $uangLembur
+            );
 
             $payroll->update([
 
@@ -210,36 +270,29 @@ class PayrollController extends Controller
     }
 
     private function hitungLemburHariKerja($gajiBulanan, $jamLembur)
-{
-    if ($jamLembur <= 0) {
-        return 0;
-    }
-
-    $upahPerJam = $gajiBulanan / 173;
-
-    $total = 0;
-
-    for ($i = 1; $i <= $jamLembur; $i++) {
-        if ($i == 1) {
-            $total += 1.5 * $upahPerJam;
-        } else {
-            $total += 2 * $upahPerJam;
-        }
-    }
-
-    return round($total);
-}
-
-    private function hitungTotalKehadiran($gajiBulanan, $hadir)
     {
-        if ($hadir <= 0) {
+        if ($jamLembur <= 0) {
             return 0;
         }
 
-        // Asumsi: 22 hari kerja dalam sebulan untuk menghitung upah per hari
-        $upahPerHari = $gajiBulanan / 22;
+        $upahPerJam = $gajiBulanan / 173;
 
-        return round($upahPerHari * $hadir);
+        $total = 0;
+
+        for ($i = 1; $i <= $jamLembur; $i++) {
+            if ($i == 1) {
+                $total += 1.5 * $upahPerJam;
+            } else {
+                $total += 2 * $upahPerJam;
+            }
+        }
+
+        return round($total);
+    }
+
+    private function hitungJumlahGaji($gajiPokok, $lembur)
+    {
+        return round($gajiPokok + $lembur);
     }
 
     /**
@@ -247,6 +300,11 @@ class PayrollController extends Controller
      */
     public function destroy(Payroll $payroll)
     {
+        $user = Auth::user();
+
+        if (!$this->isAdminOrOwner($user)) {
+            abort(403);
+        }
 
         $payroll->delete();
 
@@ -255,5 +313,20 @@ class PayrollController extends Controller
             ->with('success', 'Data payroll berhasil dihapus.');
     }
 
-   
+    protected function isAdminOrOwner($user): bool
+    {
+        if (!$user) {
+            return false;
+        }
+
+        if (method_exists($user, 'hasAnyRole') && is_callable([$user, 'hasAnyRole'])) {
+            try {
+                return (bool) $user->hasAnyRole('Admin', 'Owner');
+            } catch (\Throwable $e) {
+                return false;
+            }
+        }
+
+        return false;
+    }
 }

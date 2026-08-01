@@ -134,7 +134,7 @@
                             <div class="col-md-4">
 
                                 <div class="form-group">
-                                    <label>Jam Lembur</label>
+                                    <label>Nominal Lembur</label>
 
                                     <input
                                         type="number"
