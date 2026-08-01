@@ -1,3 +1,3 @@
   <div class="simple-footer">
-      Copyright &copy; Internusa 2026
+      Copyright &copy; RM KAPAU Nasi Padang 2026
   </div>

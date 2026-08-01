@@ -1,144 +1,74 @@
 @extends('layouts.app')
 
-@section('title','Absen Datang')
+@section('title', 'Riwayat Absensi')
 
 @section('main')
-
 <div class="main-content">
 
-<section class="section">
+    <section class="section">
 
-<div class="section-header">
+        <div class="section-header">
+            <h1>Riwayat Absensi</h1>
+        </div>
 
-<h1>Absen Datang</h1>
+        <div class="section-body">
 
-</div>
-@if(session('success'))
-<div class="alert alert-success alert-dismissible fade show">
-    {{ session('success') }}
-    <button type="button" class="close" data-dismiss="alert">
-        <span>&times;</span>
-    </button>
-</div>
-@endif
+            @if(session('success'))
+                <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
 
-@if(session('error'))
-<div class="alert alert-danger alert-dismissible fade show">
-    {{ session('error') }}
-    <button type="button" class="close" data-dismiss="alert">
-        <span>&times;</span>
-    </button>
-</div>
-@endif
-<div class="section-body">
+            <div class="card">
+                <div class="card-header">
+                    <h4>Daftar Kehadiran</h4>
+                    <div class="card-header-action">
+                         @hasanyrole('Admin|Owner')
+                        <a href="{{ route('absensi.export') }}" class="btn btn-success">Export Excel</a>
+                               @endhasanyrole  
+                    </div>
+                </div>
 
-<div class="row justify-content-center">
-
-<div class="col-md-6">
-
-<div class="card">
-
-<div class="card-header">
-
-<h4>Absensi Datang</h4>
-
-</div>
-
-<div class="card-body text-center">
-
-<h5>{{ auth()->user()->name }}</h5>
-
-<hr>
-
-<h1 id="clock"
-    style="font-size:80px;
-           font-weight:bold;
-           color:#007bff;">
-
-    00:00:00
-
-</h1>
-
-<p>Jam Sekarang</p>
-
-<hr>
-<p>
-
-<form action="{{ route('absensi.masuk') }}" method="POST">
-
-    @csrf
-
-    <div class="form-group">
-
-        <label>Pilih Shift</label>
-
-        <div>
-
-            <input type="radio"
-                   name="shift"
-                   value="Pagi"
-                   required>
-
-            Shift Pagi
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Nama</th>
+                                    <th>Tanggal Masuk</th>
+                                    <th>Tanggal Pulang</th>
+                                    <th>Jam Masuk</th>
+                                    <th>Jam Pulang</th>
+                                    <th>Shift</th>
+                                    <th>Keterlambatan (menit)</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @forelse($absensis as $absen)
+                                    <tr>
+                                        <td>{{ $absen->id }}</td>
+                                        <td>{{ $absen->user->name ?? 'N/A' }}</td>
+                                        <td>{{ optional($absen->tgl_masuk)->format('Y-m-d') ?? '-' }}</td>
+                                        <td>{{ optional($absen->tgl_pulang)->format('Y-m-d') ?? '-' }}</td>
+                                        <td>{{ $absen->jam_masuk ?? '-' }}</td>
+                                        <td>{{ $absen->jam_pulang ?? '-' }}</td>
+                                        <td>{{ $absen->shift ?? '-' }}</td>
+                                        <td>{{ $absen->keterlambatan ?? 0 }}</td>
+                                    </tr>
+                                @empty
+                                    <tr>
+                                        <td colspan="8" class="text-center">Belum ada data absensi.</td>
+                                    </tr>
+                                @endforelse
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
 
         </div>
 
-        <div>
-
-            <input type="radio"
-                   name="shift"
-                   value="Siang">
-
-            Shift Siang
-
-        </div>
-
-    </div>
-
-    <button class="btn btn-success">
-
-        Absen Datang
-
-    </button>
-
-</form>
-
-</form>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</div>
-
-</section>
+    </section>
 
 </div>
 
 @endsection
-
-@push('scripts')
-
-<script>
-
-function updateClock(){
-
-const now = new Date();
-
-document.getElementById('clock').innerHTML =
-
-now.toLocaleTimeString('id-ID');
-
-}
-
-setInterval(updateClock,1000);
-
-updateClock();
-
-</script>
-
-@endpush
