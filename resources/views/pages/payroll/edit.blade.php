@@ -134,13 +134,13 @@
                             <div class="col-md-4">
 
                                 <div class="form-group">
-                                    <label>Nominal Lembur</label>
+                                    <label>Jam Lembur</label>
 
                                     <input
                                         type="number"
-                                        name="lembur"
+                                        name="jam_lembur"
                                         class="form-control"
-                                        value="{{ old('lembur',$payroll->lembur) }}">
+                                        value="{{ old('jam_lembur',0) }}">
                                 </div>
 
                             </div>

@@ -29,4 +29,23 @@ class PayrollAccessTest extends TestCase
         $response->assertStatus(200);
         $response->assertSee($payroll->user->name);
     }
+
+    public function test_karyawan_can_access_their_own_payroll_slip_page(): void
+    {
+        $user = User::factory()->create();
+        $payroll = Payroll::factory()->create([
+            'user_id' => $user->id,
+            'gaji_pokok' => 1500000,
+            'jumlah_gaji' => 1500000,
+            'jenis_gaji' => 'Transfer Bank',
+            'periode_awal' => '2026-08-01',
+            'periode_akhir' => '2026-08-31',
+            'status' => 'Diproses',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('payroll.slip', $payroll));
+
+        $response->assertStatus(200);
+        $response->assertSee('SLIP GAJI');
+    }
 }

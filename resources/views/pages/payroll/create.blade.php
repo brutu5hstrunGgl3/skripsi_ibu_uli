@@ -159,13 +159,13 @@
 
                                 <div class="form-group">
 
-                                    <label>Nominal Lembur</label>
+                                    <label>Jam Lembur</label>
 
                                     <input
                                         type="number"
-                                        name="lembur"
+                                        name="jam_lembur"
                                         class="form-control"
-                                        value="{{ old('lembur',0) }}"
+                                        value="{{ old('jam_lembur',0) }}"
                                         min="0">
 
                                 </div>
