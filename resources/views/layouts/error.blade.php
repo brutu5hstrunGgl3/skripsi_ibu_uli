@@ -7,6 +7,10 @@
         name="viewport">
     <title>@yield('title') &mdash; Stisla</title>
 
+    <link rel="icon" type="image/png" href="{{ asset('img/logo_RM_KAPAU.png') }}">
+    <link rel="shortcut icon" href="{{ asset('img/logo_RM_KAPAU.png') }}">
+    <link rel="apple-touch-icon" href="{{ asset('img/logo_RM_KAPAU.png') }}">
+
     <!-- General CSS Files -->
     <link rel="stylesheet"
         href="{{ asset('library/bootstrap/dist/css/bootstrap.min.css') }}">

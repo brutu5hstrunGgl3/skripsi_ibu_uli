@@ -81,6 +81,7 @@ class PayrollController extends Controller
             'user_id'        => 'required|exists:users,id',
             'gaji_pokok'     => 'required|numeric|min:0',
             'lembur'         => 'nullable|numeric|min:0',
+            'jam_lembur'     => 'nullable|numeric|min:0',
             'no_rek'         => 'nullable|max:30',
             'nama_bank'      => 'nullable|max:100',
             'jenis_gaji'     => 'required|in:Transfer Bank,Payroll Bank,Tunai,E-Wallet',
@@ -99,14 +100,16 @@ class PayrollController extends Controller
 
         DB::transaction(function () use ($validated) {
 
-            $uangLembur = $this->hitungLemburHariKerja(
-                $validated['gaji_pokok'],
-                $validated['lembur'] ?? 0
-            );
+            $jamLembur = isset($validated['jam_lembur']) ? (float) $validated['jam_lembur'] : null;
+            $uangLembur = $jamLembur !== null
+                ? $this->hitungLemburHariKerja($validated['gaji_pokok'], $jamLembur)
+                : (float) ($validated['lembur'] ?? 0);
 
             $jumlahGaji = $this->hitungJumlahGaji(
                 $validated['gaji_pokok'],
-                $uangLembur
+                $uangLembur,
+                $validated['bonus'] ?? 0,
+                $validated['potongan'] ?? 0
             );
 
            Payroll::create([
@@ -231,21 +234,23 @@ class PayrollController extends Controller
 
         DB::transaction(function () use ($validated, $payroll) {
 
-            $uangLembur = $this->hitungLemburHariKerja(
-                $validated['gaji_pokok'],
-                $validated['lembur'] ?? 0
-            );
+            $jamLembur = isset($validated['jam_lembur']) ? (float) $validated['jam_lembur'] : null;
+            $uangLembur = $jamLembur !== null
+                ? $this->hitungLemburHariKerja($validated['gaji_pokok'], $jamLembur)
+                : (float) ($validated['lembur'] ?? $payroll->lembur);
 
             $jumlahGaji = $this->hitungJumlahGaji(
                 $validated['gaji_pokok'],
-                $uangLembur
+                $uangLembur,
+                $validated['bonus'] ?? 0,
+                $validated['potongan'] ?? 0
             );
 
             $payroll->update([
 
                 'user_id'       => $validated['user_id'],
                 'gaji_pokok'    => $validated['gaji_pokok'],
-                'lembur'        => $validated['lembur'] ?? 0,
+                'lembur'        => $uangLembur,
                 'no_rek'        => $validated['no_rek'],
                 'nama_bank'     => $validated['nama_bank'],
                 'jenis_gaji'    => $validated['jenis_gaji'],
@@ -290,9 +295,9 @@ class PayrollController extends Controller
         return round($total);
     }
 
-    private function hitungJumlahGaji($gajiPokok, $lembur)
+    private function hitungJumlahGaji($gajiPokok, $lembur, $bonus = 0, $potongan = 0)
     {
-        return round($gajiPokok + $lembur);
+        return round($gajiPokok + $lembur + $bonus - $potongan);
     }
 
     /**
